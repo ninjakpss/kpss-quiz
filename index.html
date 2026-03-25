@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Ninja KPSS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0e0d16;
+  --card:#18162a;
+  --card2:#1f1d33;
+  --border:rgba(255,255,255,0.07);
+  --accent:#f59e0b;
+  --accent2:#f97316;
+  --text:#f0eeff;
+  --muted:#8884aa;
+  --correct:#22c55e;
+  --wrong:#ef4444;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100dvh;flex-direction:column}
+.screen.active{display:flex}
+
+/* ── HEADER ── */
+.hdr{
+  padding:54px 22px 18px;
+  background:linear-gradient(to bottom,var(--bg) 60%,transparent);
+  position:sticky;top:0;z-index:50;
+}
+.hdr-row{display:flex;align-items:center;gap:12px}
+.back-btn{
+  width:38px;height:38px;border-radius:12px;
+  background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;cursor:pointer;flex-shrink:0;
+}
+.hdr-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800}
+.hdr-sub{font-size:12px;color:var(--muted);margin-top:3px}
+
+/* ── HOME ── */
+#home{padding:0 0 40px}
+.home-hero{
+  padding:60px 24px 32px;
+  background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(249,115,22,0.04));
+  border-bottom:1px solid var(--border);
+}
+.home-logo{
+  font-family:'Syne',sans-serif;font-size:32px;font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.home-sub{font-size:14px;color:var(--muted);margin-top:6px}
+.section-title{
+  font-size:11px;font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);
+  padding:24px 24px 12px;
+}
+.subject-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;padding:0 16px;
+}
+.subject-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:20px 16px;
+  cursor:pointer;
+  transition:transform .15s,background .15s;
+  position:relative;overflow:hidden;
+}
+.subject-card:active{transform:scale(0.96)}
+.subject-card::before{
+  content:'';position:absolute;inset:0;border-radius:20px;
+  opacity:0;transition:opacity .2s;
+}
+.subject-card.tarih::before{background:linear-gradient(135deg,rgba(245,158,11,0.12),transparent)}
+.subject-card.cografya::before{background:linear-gradient(135deg,rgba(34,197,94,0.12),transparent)}
+.subject-card.vatandaslik::before{background:linear-gradient(135deg,rgba(99,102,241,0.12),transparent)}
+.subject-card.turkce::before{background:linear-gradient(135deg,rgba(236,72,153,0.12),transparent)}
+.subject-card:active::before{opacity:1}
+.subj-icon{font-size:28px;margin-bottom:10px}
+.subj-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.subj-count{font-size:11px;color:var(--muted);margin-top:3px}
+.subj-badge{
+  display:inline-block;margin-top:8px;
+  font-size:10px;font-weight:600;letter-spacing:1px;
+  padding:3px 8px;border-radius:6px;
+}
+.tarih .subj-badge{background:rgba(245,158,11,0.15);color:var(--accent)}
+.cografya .subj-badge{background:rgba(34,197,94,0.15);color:#22c55e}
+.vatandaslik .subj-badge{background:rgba(99,102,241,0.15);color:#818cf8}
+.turkce .subj-badge{background:rgba(236,72,153,0.15);color:#f472b6}
+.coming-soon{opacity:0.45;cursor:default}
+.coming-soon .subj-badge{background:rgba(255,255,255,0.07);color:var(--muted)}
+
+/* ── TEST LIST ── */
+#testlist{padding:0 0 40px}
+.test-list{padding:8px 16px 0;display:flex;flex-direction:column;gap:10px}
+.test-item{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px 18px;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:transform .15s,background .15s;
+}
+.test-item:active{transform:scale(0.97);background:var(--card2)}
+.test-num{
+  width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:16px;font-weight:800;
+  color:#111;flex-shrink:0;
+}
+.test-info{flex:1}
+.test-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.test-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.test-arrow{font-size:18px;color:var(--muted)}
+.test-item.locked{opacity:0.4;cursor:default}
+.lock-icon{font-size:18px}
+
+/* ── QUIZ ── */
+#quiz{padding:0}
+.quiz-hdr{
+  padding:54px 22px 14px;
+  background:var(--bg);
+  position:sticky;top:0;z-index:50;
+}
+.quiz-hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.quiz-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800}
+.quiz-counter{
+  font-size:12px;font-weight:600;
+  background:rgba(245,158,11,0.12);
+  border:1px solid rgba(245,158,11,0.2);
+  padding:4px 12px;border-radius:20px;color:var(--accent);
+}
+.prog-bar{height:3px;background:rgba(255,255,255,0.06);border-radius:2px}
+.prog-fill{height:100%;background:linear-gradient(to right,var(--accent),var(--accent2));border-radius:2px;transition:width .4s ease}
+
+.quiz-body{flex:1;padding:20px 16px 100px;overflow-y:auto}
+.question-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:24px 20px;
+  margin-bottom:16px;
+}
+.q-num{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.q-text{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;line-height:1.5}
+.q-sub{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
+
+.options{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.opt{
+  background:var(--card2);
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  padding:14px 16px;
+  display:flex;align-items:flex-start;gap:12px;
+  cursor:pointer;transition:all .15s;
+}
+.opt:active{transform:scale(0.98)}
+.opt-letter{
+  width:28px;height:28px;border-radius:8px;
+  background:rgba(255,255,255,0.06);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;flex-shrink:0;color:var(--muted);
+  transition:all .15s;
+}
+.opt-text{font-size:14px;line-height:1.45;padding-top:4px}
+.opt.selected{border-color:var(--accent);background:rgba(245,158,11,0.08)}
+.opt.selected .opt-letter{background:var(--accent);color:#111}
+.opt.correct{border-color:var(--correct);background:rgba(34,197,94,0.1)}
+.opt.correct .opt-letter{background:var(--correct);color:#fff}
+.opt.wrong{border-color:var(--wrong);background:rgba(239,68,68,0.1)}
+.opt.wrong .opt-letter{background:var(--wrong);color:#fff}
+.opt.disabled{pointer-events:none}
+
+.next-btn{
+  position:fixed;bottom:24px;left:16px;right:16px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#111;border:none;border-radius:16px;
+  padding:17px;font-family:'Syne',sans-serif;
+  font-size:16px;font-weight:800;cursor:pointer;
+  transition:transform .15s,opacity .15s;
+  display:none;z-index:100;
+}
+.next-btn.show{display:block}
+.next-btn:active{transform:scale(0.97)}
+
+/* ── RESULT ── */
+#result{align-items:center;justify-content:center;padding:40px 24px;text-align:center;gap:22px}
+.res-circle{
+  width:120px;height:120px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;
+  box-shadow:0 0 60px rgba(245,158,11,0.25);
+}
+.res-pct{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:#111}
+.res-pct-label{font-size:10px;font-weight:700;color:rgba(0,0,0,0.6)}
+.res-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800}
+.res-sub{font-size:14px;color:var(--muted);line-height:1.5;max-width:280px}
+.res-stats{display:flex;gap:12px;width:100%}
+.res-stat{
+  flex:1;background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:16px 12px;text-align:center;
+}
+.res-stat-n{font-family:'Syne',sans-serif;font-size:30px;font-weight:800}
+.res-stat-n.c{color:var(--correct)} .res-stat-n.w{color:var(--wrong)} .res-stat-n.e{color:var(--muted)}
+.res-stat-l{font-size:11px;color:var(--muted);margin-top:3px}
+.res-btns{display:flex;flex-direction:column;gap:10px;width:100%}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#111;border:none;border-radius:14px;padding:16px;
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:800;
+  cursor:pointer;transition:transform .15s;
+}
+.btn-primary:active{transform:scale(0.97)}
+.btn-secondary{
+  background:var(--card);color:var(--text);
+  border:1px solid var(--border);border-radius:14px;padding:15px;
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  cursor:pointer;transition:transform .15s;
+}
+.btn-secondary:active{transform:scale(0.97)}
+</style>
+</head>
+<body>
+
+<!-- ══ HOME ══ -->
+<div class="screen active" id="home">
+  <div class="home-hero">
+    <div class="home-logo">🥷 Ninja KPSS</div>
+    <div class="home-sub">Hangi dersi çalışmak istiyorsun?</div>
+  </div>
+  <div class="section-title">Dersler</div>
+  <div class="subject-grid">
+    <div class="subject-card tarih" onclick="goTestList('tarih')">
+      <div class="subj-icon">📜</div>
+      <div class="subj-name">Tarih</div>
+      <div class="subj-count">1 test · 10 soru</div>
+      <div class="subj-badge">AKTİF</div>
+    </div>
+    <div class="subject-card cografya coming-soon">
+      <div class="subj-icon">🗺️</div>
+      <div class="subj-name">Coğrafya</div>
+      <div class="subj-count">Yakında</div>
+      <div class="subj-badge">YAKINDA</div>
+    </div>
+    <div class="subject-card vatandaslik coming-soon">
+      <div class="subj-icon">⚖️</div>
+      <div class="subj-name">Vatandaşlık</div>
+      <div class="subj-count">Yakında</div>
+      <div class="subj-badge">YAKINDA</div>
+    </div>
+    <div class="subject-card turkce coming-soon">
+      <div class="subj-icon">📝</div>
+      <div class="subj-name">Türkçe</div>
+      <div class="subj-count">Yakında</div>
+      <div class="subj-badge">YAKINDA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TEST LIST ══ -->
+<div class="screen" id="testlist">
+  <div class="hdr">
+    <div class="hdr-row">
+      <div class="back-btn" onclick="goHome()">←</div>
+      <div>
+        <div class="hdr-title" id="tl-title">Tarih</div>
+        <div class="hdr-sub" id="tl-sub">Test seç</div>
+      </div>
+    </div>
+  </div>
+  <div class="test-list" id="test-list-items"></div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div class="screen" id="quiz">
+  <div class="quiz-hdr">
+    <div class="quiz-hdr-row">
+      <div class="back-btn" onclick="goTestList(currentSubject)">←</div>
+      <div class="quiz-title" id="quiz-title"></div>
+      <div class="quiz-counter" id="quiz-counter"></div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
+  <div class="quiz-body" id="quiz-body"></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()"></button>
+</div>
+
+<!-- ══ RESULT ══ -->
+<div class="screen" id="result">
+  <div class="res-circle">
+    <div class="res-pct" id="res-pct"></div>
+    <div class="res-pct-label">PUAN</div>
+  </div>
+  <div class="res-title" id="res-title"></div>
+  <div class="res-sub" id="res-sub"></div>
+  <div class="res-stats">
+    <div class="res-stat"><div class="res-stat-n c" id="res-c"></div><div class="res-stat-l">Doğru</div></div>
+    <div class="res-stat"><div class="res-stat-n w" id="res-w"></div><div class="res-stat-l">Yanlış</div></div>
+    <div class="res-stat"><div class="res-stat-n e" id="res-e"></div><div class="res-stat-l">Boş</div></div>
+  </div>
+  <div class="res-btns">
+    <button class="btn-primary" onclick="retryTest()">🔄 Tekrar Çöz</button>
+    <button class="btn-secondary" onclick="goTestList(currentSubject)">← Test Listesi</button>
+    <button class="btn-secondary" onclick="goHome()">🏠 Ana Sayfa</button>
+  </div>
+</div>
+
+<script>
+// ══ VERİ ══
+const DATA = {
+  tarih: {
+    name: "Tarih",
+    icon: "📜",
+    tests: [
+      {
+        name: "Test 1 — Orta Asya & Osmanlı",
+        questions: [
+          {
+            q: "Orta Asya Türk devletlerinde aşağıdakilerden hangisi göçebe yaşantının bir sonucu değildir?",
+            opts: [
+              "Ekonominin hayvancılığa dayanması",
+              "Tarımsal üretimin az olması",
+              "Mimarinin gelişmemesi",
+              "Sınıf farklılıklarının ortaya çıkması",
+              "Sanat eserlerinin taşınabilir nitelikte olması"
+            ],
+            ans: 3
+          },
+          {
+            q: "Büyük Selçuklu Devleti'yle ilgili olarak aşağıdakilerden hangisi yanlıştır?",
+            opts: [
+              "Tuğrul Bey önderliğinde kurulduğu",
+              "İran'da tek siyasi güç haline geldiği",
+              "Gaznelilere karşı Dandanakan Savaşı'nı kazandığı",
+              "Haçlı Seferlerinin düzenlenmesine ortam hazırladığı",
+              "İlk ribatları oluşturduğu"
+            ],
+            ans: 4
+          },
+          {
+            q: "Anadolu Selçuklularda donanma komutanına; I. reisülbahr, II. emirüssevahil, III. şıhne isimlerinden hangileri verilmiştir?",
+            opts: [
+              "Yalnız I",
+              "Yalnız II",
+              "I ve II",
+              "I ve III",
+              "I, II ve III"
+            ],
+            ans: 2
+          },
+          {
+            q: "Aşağıdakilerden hangisi Orhan Bey Dönemi gelişmeleri arasında yer almaz?",
+            opts: [
+              "İlk Osmanlı medresesinin açılması",
+              "Divanıhümayunun kurulması",
+              "Rumeli'ye ilk kez geçilmesi",
+              "Osmanlı'nın ilk düzenli ordusunun kurulması",
+              "Karamanoğulları Beyliği'nin Osmanlı'ya katılması"
+            ],
+            ans: 4
+          },
+          {
+            q: "İnebahtı Deniz Savaşı'nda gemilerini ve mürettebatını kurtaran ve bu başarısı nedeniyle adı Kılıç Ali olarak değiştirilen Osmanlı denizcisi aşağıdakilerden hangisidir?",
+            opts: [
+              "Uluç Ali Reis",
+              "Seydî Ali Reis",
+              "Pirî Reis",
+              "Murat Reis",
+              "Hadım Süleyman Paşa"
+            ],
+            ans: 0
+          },
+          {
+            q: "Aşağıdakilerden hangisi Osmanlı Devleti'nin minyatürcüleri arasında yer almaz?",
+            opts: [
+              "Nigari",
+              "Nakkaş Osman",
+              "Sinan Bey",
+              "Nedim",
+              "Matrakçı Nasuh"
+            ],
+            ans: 3
+          },
+          {
+            q: "Sultanların avlanmaları sırasında kullandıkları tazıları beslemek ve av sırasında sultana eşlik etmek amacıyla ilk defa I. Murat Zamanı'nda kurulan ve Fatih Zamanı'nda Yeniçeri Ocağına dahil edilen birlik aşağıdakilerden hangisidir?",
+            opts: [
+              "Sekbân",
+              "Turnacıbaşı",
+              "Ulufeci",
+              "Muhzır Ağa",
+              "Cebeci"
+            ],
+            ans: 0
+          },
+          {
+            q: "XVII. yüzyılda gerçekleşen yenilik hareketleri içerisinde aşağıdakilerden hangisi yer almaz?",
+            opts: [
+              "İlk kez modern bütçenin oluşturulması",
+              "Yeniçeri Ocağının kaldırılmak istenmesi",
+              "Şehzadelerin yetişme biçiminde değişikliğe gidilmesi",
+              "Avrupalı uzmanlardan yararlanılması",
+              "Devletin durumu ile ilgili raporlar hazırlanması"
+            ],
+            ans: 1
+          },
+          {
+            q: "Lale Dönemi'ni sona erdiren Patrona Halil İsyanı ile Nizam-ı Cedit yeniliklerine karşı çıkan Kabakçı Mustafa İsyanı'nın ortak yönü aşağıdakilerden hangisidir?",
+            opts: [
+              "Ekonomik nedenle çıkması",
+              "Halkın talep ve desteğiyle çıkması",
+              "Yabancı devletler tarafından organize edilmeleri",
+              "Yenilik karşıtlarınca çıkması",
+              "Dış sorun hâline gelmeleri"
+            ],
+            ans: 3
+          },
+          {
+            q: "Tanzimat Dönemi'nde müsadere usulünün yasaklanması ile; I. Padişahın otoritesi kısıtlanmıştır. II. Sermaye birikiminin önü açılmıştır. III. Türklere ticaret yapma özgürlüğü tanınmıştır. durumlarından hangilerinin ortaya çıktığı savunulabilir?",
+            opts: [
+              "Yalnız I",
+              "Yalnız II",
+              "Yalnız III",
+              "I ve II",
+              "I, II ve III"
+            ],
+            ans: 3
+          }
+        ]
+      }
+    ]
+  }
+};
+
+// ══ STATE ══
+let currentSubject = 'tarih';
+let currentTest = null;
+let currentQ = 0;
+let answers = [];
+let selected = null;
+
+// ══ NAVİGASYON ══
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goHome(){ showScreen('home') }
+
+function goTestList(subject){
+  currentSubject = subject;
+  const data = DATA[subject];
+  document.getElementById('tl-title').textContent = data.icon + ' ' + data.name;
+  document.getElementById('tl-sub').textContent = data.tests.length + ' test mevcut';
+  const list = document.getElementById('test-list-items');
+  list.innerHTML = '';
+  data.tests.forEach((t,i)=>{
+    const div = document.createElement('div');
+    div.className = 'test-item';
+    div.innerHTML = `
+      <div class="test-num">${i+1}</div>
+      <div class="test-info">
+        <div class="test-name">${t.name}</div>
+        <div class="test-meta">${t.questions.length} soru</div>
+      </div>
+      <div class="test-arrow">›</div>`;
+    div.onclick = ()=>startTest(subject, i);
+    list.appendChild(div);
+  });
+  // Yakında olanlar
+  for(let i=data.tests.length;i<3;i++){
+    const div=document.createElement('div');
+    div.className='test-item locked';
+    div.innerHTML=`
+      <div class="test-num" style="background:var(--card2);color:var(--muted)">${i+1}</div>
+      <div class="test-info">
+        <div class="test-name">Test ${i+1}</div>
+        <div class="test-meta">Yakında eklenecek</div>
+      </div>
+      <div class="lock-icon">🔒</div>`;
+    list.appendChild(div);
+  }
+  showScreen('testlist');
+}
+
+function startTest(subject, testIdx){
+  currentSubject = subject;
+  currentTest = testIdx;
+  currentQ = 0;
+  answers = new Array(DATA[subject].tests[testIdx].questions.length).fill(null);
+  selected = null;
+  renderQ();
+  showScreen('quiz');
+}
+
+// ══ QUIZ ══
+function renderQ(){
+  const test = DATA[currentSubject].tests[currentTest];
+  const q = test.questions[currentQ];
+  const total = test.questions.length;
+
+  document.getElementById('quiz-title').textContent = test.name.split('—')[0].trim();
+  document.getElementById('quiz-counter').textContent = `${currentQ+1} / ${total}`;
+  document.getElementById('prog-fill').style.width = ((currentQ+1)/total*100)+'%';
+
+  const body = document.getElementById('quiz-body');
+  const letters = ['A','B','C','D','E'];
+  body.innerHTML = `
+    <div class="question-card">
+      <div class="q-num">Soru ${currentQ+1}</div>
+      <div class="q-text">${q.q}</div>
+    </div>
+    <div class="options">
+      ${q.opts.map((o,i)=>`
+        <div class="opt" id="opt${i}" onclick="selectOpt(${i})">
+          <div class="opt-letter" id="ltr${i}">${letters[i]}</div>
+          <div class="opt-text">${o}</div>
+        </div>`).join('')}
+    </div>`;
+
+  const nb = document.getElementById('next-btn');
+  nb.classList.remove('show');
+  nb.textContent = currentQ < total-1 ? 'Sonraki Soru →' : 'Sonucu Gör 🏆';
+  selected = null;
+}
+
+function selectOpt(idx){
+  if(selected !== null) return;
+  selected = idx;
+  answers[currentQ] = idx;
+  const q = DATA[currentSubject].tests[currentTest].questions[currentQ];
+  const letters = ['A','B','C','D','E'];
+
+  q.opts.forEach((_,i)=>{
+    const el = document.getElementById('opt'+i);
+    el.classList.add('disabled');
+    if(i === q.ans) el.classList.add('correct');
+    else if(i === idx && idx !== q.ans) el.classList.add('wrong');
+  });
+
+  document.getElementById('next-btn').classList.add('show');
+}
+
+function nextQ(){
+  const total = DATA[currentSubject].tests[currentTest].questions.length;
+  if(currentQ < total-1){
+    currentQ++;
+    renderQ();
+    window.scrollTo(0,0);
+  } else {
+    showResult();
+  }
+}
+
+// ══ SONUÇ ══
+function showResult(){
+  const test = DATA[currentSubject].tests[currentTest];
+  let correct=0, wrong=0, empty=0;
+  test.questions.forEach((q,i)=>{
+    if(answers[i]===null) empty++;
+    else if(answers[i]===q.ans) correct++;
+    else wrong++;
+  });
+  const pct = Math.round(correct/test.questions.length*100);
+  document.getElementById('res-pct').textContent = pct;
+  document.getElementById('res-c').textContent = correct;
+  document.getElementById('res-w').textContent = wrong;
+  document.getElementById('res-e').textContent = empty;
+  document.getElementById('res-title').textContent = pct>=80?'Harika! 🏆':pct>=60?'İyi İş! 👏':pct>=40?'Çalış Biraz 📚':'Vazgeçme! 💪';
+  document.getElementById('res-sub').textContent = `${test.questions.length} sorudan ${correct} doğru yaptın.`;
+  showScreen('result');
+}
+
+function retryTest(){ startTest(currentSubject, currentTest) }
+</script>
+</body>
+</html>
